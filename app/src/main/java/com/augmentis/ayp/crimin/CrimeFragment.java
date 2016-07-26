@@ -2,7 +2,6 @@ package com.augmentis.ayp.crimin;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.nfc.Tag;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.text.Editable;
@@ -19,7 +18,6 @@ import android.widget.EditText;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
-import java.util.logging.SimpleFormatter;
 
 /**
  * Created by Apinya on 7/18/2016.
@@ -54,7 +52,7 @@ public class CrimeFragment extends Fragment {
 
         UUID crimeId = (UUID) getArguments().getSerializable(CRIME_ID);
         position  = getArguments().getInt(CRIME_POSITION);
-        crime = CrimeLab.getInstance().getCrimeByID(crimeId);
+        crime = CrimeLab.getInstance(getActivity()).getCrimeByID(crimeId);
         Log.d(CrimeListFragment.TAG, " crime.getId()=" + crime.getId());
         Log.d(CrimeListFragment.TAG, " crime.getTitle()=" + crime.getTitle());
     }
@@ -75,6 +73,7 @@ public class CrimeFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 crime.setTitle(s.toString());
+                addThisPositionToResult(position);
             }
 
             @Override
@@ -94,32 +93,25 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
+                addThisPositionToResult(position);
                 Log.d(CrimeListFragment.TAG, "Crime:" + crime.toString());
             }
         });
 
 
-        Intent intent = new Intent();
-        intent.putExtra("Position" ,position);
-        Log.d(CrimeListFragment.TAG, "send position back: " + position);
-        getActivity().setResult(Activity.RESULT_OK, intent);
+
 
         return v;
     }
 
-//    @Override
-//    public void onStop() {
-//        super.onStop();
-//        getActivity().setResult(Activity.RESULT_OK, null);
-//    }
-//
-//    @Override
-//    public void onPause() {
-//        super.onPause();
-//    }
-
     private String getFormattedDate(Date date){
        return new SimpleDateFormat("dd MMMM yyyy").format(date);
+    }
+
+    private void addThisPositionToResult(int position){
+        if(getActivity() instanceof  CrimePagerActivity){
+            ((CrimePagerActivity) getActivity()).addPageUpdate(position);
+        }
     }
 
 }

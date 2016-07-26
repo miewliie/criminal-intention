@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,17 +27,18 @@ public class CrimeListFragment extends Fragment {
     private CrimeAdapter _adapter;
 
     protected static final String TAG = "CRIME_LIST";
-    private int crimePos;
+    private Integer[] crimePos;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_crime_list, container, false);
 
-        _crimeRecyclerView = (RecyclerView) v.findViewById(R.id.crime_recycler_view);
-        _crimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        _crimeRecyclerView = (RecyclerView) v.findViewById(R.id.crime_recycler_view); //put recyclerview into view then view find this id
+        _crimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); // set layoutManager into this no matter what they doing
+        //but we know it will draw follow LManager what class like LinearLManager
 
-        updateUI();
+        updateUI();//call method update UI to drawing fragment
         return v;
 
     }
@@ -47,15 +47,22 @@ public class CrimeListFragment extends Fragment {
      * Update UI
      */
     private void updateUI() {
-        CrimeLab crimeLab = CrimeLab.getInstance();
+        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
         if (_adapter == null) {
             _adapter = new CrimeAdapter(crimes);
             _crimeRecyclerView.setAdapter(_adapter);
         }else {
-        //    _adapter.notifyDataSetChanged();
-            _adapter.notifyItemChanged(crimePos);
+            if(crimePos != null) {
+                for (Integer pos : crimePos) {
+                    _adapter.notifyItemChanged(pos);
+                    Log.d(TAG, "notify change at " + pos);
+                }
+            }
+//            _adapter.notifyItemChanged(crimePos);
+//            _adapter.notifyDataSetChanged();
+//            _adapter.notifyItemRangeChanged(crimePos, crimes.size());
 //            Log.d(TAG, "notify add ");
         }
     }
@@ -76,8 +83,8 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == REQUEST_UPDATED_CRIME){
-            if(requestCode == Activity.RESULT_OK) {
-                crimePos = (int) data.getExtras().get("position");
+            if(resultCode == Activity.RESULT_OK) {
+                crimePos = (Integer[]) data.getExtras().get("position");
                 Log.d(TAG, "get crimePos = " + crimePos);
             }
             //blah blah
@@ -115,7 +122,7 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Log.d(TAG, "send position : " + _position);
-            Intent intent = CrimeActivity.newIntent(getActivity(), _crime.getId(), _position);
+            Intent intent = CrimePagerActivity.newIntent(getActivity(), _crime.getId(), _position);
             startActivityForResult(intent, REQUEST_UPDATED_CRIME);
         }
     }
