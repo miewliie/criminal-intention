@@ -15,9 +15,12 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.TimePicker;
 
+import java.sql.Time;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
 import java.util.UUID;
 
 /**
@@ -29,12 +32,15 @@ public class CrimeFragment extends Fragment {
     private static final String CRIME_POSITION = "CrimeFragment.CRIME_POS";
     private static final String DIALOG_DATE = "CrimeFragment.DIALOG_DATE";
     private static final int REQUEST_DATE = 221;
+    private static final int REQUEST_TIME = 1;
+    private static final String DIALOG_TIME = "CrimeFragment.DIALOG_TIME";
 
     private Crime crime;
 
     private int position;
     private EditText editText;
     private Button crimeDateButton;
+    private Button crimeTimeButton;
     private CheckBox crimeSolveCheckbox;
 
     public CrimeFragment(){}
@@ -93,8 +99,7 @@ public class CrimeFragment extends Fragment {
 
                 ///
                 FragmentManager fm = getFragmentManager();
-                DatePickerFragment dialogFragment =
-                        DatePickerFragment.newInstance(crime.getCrimeDate());
+                DatePickerFragment dialogFragment = DatePickerFragment.newInstance(crime.getCrimeDate());
                 dialogFragment.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
 //                FragmentManager fm = getFragmentManager();
 //                DatePickerFragment dialogFragment = new DatePickerFragment();
@@ -104,7 +109,20 @@ public class CrimeFragment extends Fragment {
                 dialogFragment.show(fm, DIALOG_DATE);
 
             }
-        });
+        });//date button
+
+        crimeTimeButton = (Button) v.findViewById(R.id.button_time_picker);
+        crimeTimeButton.setText(getFormattedTime(crime.getCrimeDate()));
+        crimeTimeButton.setOnClickListener(new View.OnClickListener(){
+
+            @Override
+            public void onClick(View v) {
+                FragmentManager fm = getFragmentManager();
+                TimePickerFragment dialogFragment = TimePickerFragment.newInstance(crime.getCrimeDate());
+                dialogFragment.setTargetFragment(CrimeFragment.this, REQUEST_TIME);
+                dialogFragment.show(fm, DIALOG_TIME);
+            }
+        });//time button
 
         crimeSolveCheckbox = (CheckBox) v.findViewById(R.id.crime_solved);
         crimeSolveCheckbox.setChecked(crime.isSolved());
@@ -121,6 +139,10 @@ public class CrimeFragment extends Fragment {
 
 
         return v;
+    }
+
+    private String getFormattedTime(Date datetime) {
+        return new SimpleDateFormat("HH:mm:ss").format(datetime);
     }
 
     private String getFormattedDate(Date date){

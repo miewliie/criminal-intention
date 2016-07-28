@@ -1,9 +1,11 @@
 package com.augmentis.ayp.crimin;
 
+import java.sql.Time;
 import java.text.DateFormat;
 import java.text.DateFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Timer;
 import java.util.UUID;
 
 /**
@@ -52,6 +54,7 @@ public class Crime {
     public void setSolved(boolean solved) {
         this.solved = solved;
     }
+
 
     @Override
     public String toString() {
