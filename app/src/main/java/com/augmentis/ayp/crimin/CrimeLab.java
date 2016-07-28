@@ -24,7 +24,7 @@ public class CrimeLab {
     private CrimeLab(){
         crimeList = new ArrayList<>();
 
-        for (int i = 0; i < 100; i++){
+        for (int i = 0; i < 10; i++){
             Crime crime = new Crime();
             crime.setTitle("Crime #" + i);
             crime.setSolved(i % 2 == 0);

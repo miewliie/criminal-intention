@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -26,6 +27,8 @@ public class CrimeFragment extends Fragment {
 
     private static final String CRIME_ID = "CrimeFragment.CRIME_ID";
     private static final String CRIME_POSITION = "CrimeFragment.CRIME_POS";
+    private static final String DIALOG_DATE = "CrimeFragment.DIALOG_DATE";
+    private static final int REQUEST_DATE = 221;
 
     private Crime crime;
 
@@ -84,8 +87,24 @@ public class CrimeFragment extends Fragment {
 
         crimeDateButton = (Button) v.findViewById(R.id.crime_date);
         crimeDateButton.setText(getFormattedDate(crime.getCrimeDate()));
-        crimeDateButton.setEnabled(false);
+        crimeDateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
+                ///
+                FragmentManager fm = getFragmentManager();
+                DatePickerFragment dialogFragment =
+                        DatePickerFragment.newInstance(crime.getCrimeDate());
+                dialogFragment.setTargetFragment(CrimeFragment.this, REQUEST_DATE);
+//                FragmentManager fm = getFragmentManager();
+//                DatePickerFragment dialogFragment = new DatePickerFragment();
+//                Bundle args = new Bundle();
+//                args.putSerializable("ARG_DATE", crime.getCrimeDate());
+//                dialogFragment.setArguments(args);
+                dialogFragment.show(fm, DIALOG_DATE);
+
+            }
+        });
 
         crimeSolveCheckbox = (CheckBox) v.findViewById(R.id.crime_solved);
         crimeSolveCheckbox.setChecked(crime.isSolved());
@@ -114,4 +133,18 @@ public class CrimeFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int result, Intent data) {
+        if(result != Activity.RESULT_OK){
+            return;
+        }
+        if (requestCode == REQUEST_DATE){
+            Date date = (Date) data.getSerializableExtra(DatePickerFragment.EXTRA_DATE);
+            //
+
+            crime.setCrimeDate(date);
+            crimeDateButton.setText(getFormattedDate(crime.getCrimeDate()));
+            addThisPositionToResult(position);
+        }
+    }
 }
