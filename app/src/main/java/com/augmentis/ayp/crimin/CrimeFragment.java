@@ -9,6 +9,9 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -45,10 +48,10 @@ public class CrimeFragment extends Fragment {
 
     public CrimeFragment(){}
 
-    public static CrimeFragment newInstance(UUID crimeId, int position){
+    public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();
         args.putSerializable(CRIME_ID, crimeId);
-        args.putInt(CRIME_POSITION, position);
+//        args.putInt(CRIME_POSITION, position);
 
         CrimeFragment crimeFragment = new CrimeFragment();
         crimeFragment.setArguments(args);
@@ -59,8 +62,10 @@ public class CrimeFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        setHasOptionsMenu(true);
+
         UUID crimeId = (UUID) getArguments().getSerializable(CRIME_ID);
-        position  = getArguments().getInt(CRIME_POSITION);
+//        position  = getArguments().getInt(CRIME_POSITION);
         crime = CrimeLab.getInstance(getActivity()).getCrimeByID(crimeId);
         Log.d(CrimeListFragment.TAG, " crime.getId()=" + crime.getId());
         Log.d(CrimeListFragment.TAG, " crime.getTitle()=" + crime.getTitle());
@@ -82,7 +87,7 @@ public class CrimeFragment extends Fragment {
             public void onTextChanged(CharSequence s, int start, int before, int count) {
 
                 crime.setTitle(s.toString());
-                addThisPositionToResult(position);
+//                addThisPositionToResult(position);
             }
 
             @Override
@@ -130,7 +135,7 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
-                addThisPositionToResult(position);
+//                addThisPositionToResult(position);
                 Log.d(CrimeListFragment.TAG, "Crime:" + crime.toString());
             }
         });
@@ -149,11 +154,11 @@ public class CrimeFragment extends Fragment {
        return new SimpleDateFormat("dd MMMM yyyy").format(date);
     }
 
-    private void addThisPositionToResult(int position){
-        if(getActivity() instanceof  CrimePagerActivity){
-            ((CrimePagerActivity) getActivity()).addPageUpdate(position);
-        }
-    }
+//    private void addThisPositionToResult(int position){
+//        if(getActivity() instanceof  CrimePagerActivity){
+//            ((CrimePagerActivity) getActivity()).addPageUpdate(position);
+//        }
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int result, Intent data) {
@@ -166,7 +171,30 @@ public class CrimeFragment extends Fragment {
 
             crime.setCrimeDate(date);
             crimeDateButton.setText(getFormattedDate(crime.getCrimeDate()));
-            addThisPositionToResult(position);
+//            addThisPositionToResult(position);
         }
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+
+        inflater.inflate(R.menu.crime_delete, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.menu_item_delete_crime:
+
+                CrimeLab.getInstance(getActivity()).deleteCrime(crime);
+                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+                startActivity(intent);
+
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 }

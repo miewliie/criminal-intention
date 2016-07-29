@@ -6,4 +6,8 @@
     <string name="crime_detail_label">Details</string>
     <string name="date_picker_title">Picker Date</string>
     <string name="time_picker_title">Time Picker</string>
+    <string name="show_subtitle">Show SubTitle</string>
+    <string name="show_test_1">Test 1</string>
+    <string name="subtitle_format">%d Crime(s)</string>
+    <string name="hide_subtitle">Hide_Subtitle</string>
 </resources>

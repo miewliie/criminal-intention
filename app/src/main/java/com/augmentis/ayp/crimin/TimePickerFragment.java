@@ -51,7 +51,9 @@ public class TimePickerFragment extends DialogFragment implements DialogInterfac
         int min = calendar.get(Calendar.MINUTE);
 
         View v =  LayoutInflater.from(getActivity()).inflate(R.layout.dialog_time, null);
+
         _timePicker = (TimePicker) v.findViewById(R.id.time_picker_in_dialog);
+
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             _timePicker.setHour(hour);
             _timePicker.setMinute(min);
