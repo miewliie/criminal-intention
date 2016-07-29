@@ -142,7 +142,7 @@ public class CrimeFragment extends Fragment {
     }
 
     private String getFormattedTime(Date datetime) {
-        return new SimpleDateFormat("HH:mm:ss").format(datetime);
+        return new SimpleDateFormat("HH:mm").format(datetime);
     }
 
     private String getFormattedDate(Date date){

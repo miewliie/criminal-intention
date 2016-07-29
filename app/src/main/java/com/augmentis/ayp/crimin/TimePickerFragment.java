@@ -18,6 +18,7 @@ import android.widget.TimePicker;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 /**
  * Created by Apinya on 7/28/2016.
@@ -45,6 +46,7 @@ public class TimePickerFragment extends DialogFragment implements DialogInterfac
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
+
         int hour = calendar.get(Calendar.HOUR);
         int min = calendar.get(Calendar.MINUTE);
 
@@ -66,15 +68,21 @@ public class TimePickerFragment extends DialogFragment implements DialogInterfac
     }
 
 
+
     @Override
     public void onClick(DialogInterface dialog, int which) {
 
-        int hour = _timePicker.getHour();
-        int minute = _timePicker.getMinute();
-//
-//
-//        Date date = new GregorianCalendar(hour, minute).getTime();
-//        sendResult(Activity.RESULT_OK, date);
+        _timePicker.clearFocus();
+
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+
+            int hour = _timePicker.getHour();
+            int minute = _timePicker.getMinute();
+
+
+            Date date = new GregorianCalendar(2016, 05, 2, hour, minute).getTime();
+            sendResult(Activity.RESULT_OK, date);
+        }
     }
 
     private void sendResult(int resultCode, Date date) {

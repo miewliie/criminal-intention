@@ -23,6 +23,7 @@ public class DatePickerFragment extends DialogFragment implements DialogInterfac
 
 
     protected static final String EXTRA_DATE = "DatePickerFragment.EXTRA_DATE";
+    public static final int RESULT_TIME = 121;
 
     public static DatePickerFragment newInstance(Date date){
         DatePickerFragment df = new DatePickerFragment();
