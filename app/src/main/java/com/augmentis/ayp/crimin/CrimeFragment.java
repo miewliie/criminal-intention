@@ -40,7 +40,6 @@ public class CrimeFragment extends Fragment {
 
     private Crime crime;
 
-    private int position;
     private EditText editText;
     private Button crimeDateButton;
     private Button crimeTimeButton;
@@ -51,7 +50,6 @@ public class CrimeFragment extends Fragment {
     public static CrimeFragment newInstance(UUID crimeId){
         Bundle args = new Bundle();
         args.putSerializable(CRIME_ID, crimeId);
-//        args.putInt(CRIME_POSITION, position);
 
         CrimeFragment crimeFragment = new CrimeFragment();
         crimeFragment.setArguments(args);
@@ -61,14 +59,21 @@ public class CrimeFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
 
-        UUID crimeId = (UUID) getArguments().getSerializable(CRIME_ID);
-//        position  = getArguments().getInt(CRIME_POSITION);
-        crime = CrimeLab.getInstance(getActivity()).getCrimeByID(crimeId);
-        Log.d(CrimeListFragment.TAG, " crime.getId()=" + crime.getId());
-        Log.d(CrimeListFragment.TAG, " crime.getTitle()=" + crime.getTitle());
+        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
+
+        if(getArguments().get(CRIME_ID) != null) {
+            UUID crimeId = (UUID) getArguments().getSerializable(CRIME_ID);
+            crime = CrimeLab.getInstance(getActivity()).getCrimeByID(crimeId);
+            Log.d(CrimeListFragment.TAG, " crime.getId()=" + crime.getId());
+        }else {//TODO delete later
+            //== null
+
+            Crime crime = new Crime();
+            crimeLab.addCrime(crime);
+            this.crime = crime;
+        }
     }
 
     @Override
@@ -135,8 +140,8 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 crime.setSolved(isChecked);
-//                addThisPositionToResult(position);
-                Log.d(CrimeListFragment.TAG, "Crime:" + crime.toString());
+
+
             }
         });
 
@@ -153,12 +158,6 @@ public class CrimeFragment extends Fragment {
     private String getFormattedDate(Date date){
        return new SimpleDateFormat("dd MMMM yyyy").format(date);
     }
-
-//    private void addThisPositionToResult(int position){
-//        if(getActivity() instanceof  CrimePagerActivity){
-//            ((CrimePagerActivity) getActivity()).addPageUpdate(position);
-//        }
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int result, Intent data) {
@@ -187,14 +186,24 @@ public class CrimeFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_item_delete_crime:
 
-                CrimeLab.getInstance(getActivity()).deleteCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+                CrimeLab.getInstance(getActivity()).deleteCrime(crime.getId());
+                getActivity().finish();
+
+//                CrimeLab.getInstance(getActivity()).deleteCrime(crime);
+//                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+//                startActivity(intent);
 
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
 
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        CrimeLab.getInstance(getActivity()).updateCrime(crime);// update crime in db
     }
 }

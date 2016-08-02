@@ -16,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import java.util.List;
@@ -78,21 +79,12 @@ public class CrimeListFragment extends Fragment {
         List<Crime> crimes = crimeLab.getCrimes();
 
         if (_adapter == null) {
-            _adapter = new CrimeAdapter(crimes);
+            _adapter = new CrimeAdapter(this, crimes);
             _crimeRecyclerView.setAdapter(_adapter);
         }else {
+            _adapter.setCrimes(crimeLab.getCrimes());
             _adapter.notifyDataSetChanged();
 
-//            if(crimePos != null) {
-//                for (Integer pos : crimePos) {
-//                    _adapter.notifyDataSetChanged();
-//                    Log.d(TAG, "notify change at " + pos);
-//                }
-//            }
-//            _adapter.notifyItemChanged(crimePos);
-//            _adapter.notifyDataSetChanged();
-//            _adapter.notifyItemRangeChanged(crimePos, crimes.size());
-//            Log.d(TAG, "notify add ");
         }
     }
 
@@ -185,12 +177,24 @@ public class CrimeListFragment extends Fragment {
             itemView.setOnClickListener(this);
         }
 
-        public void bind(Crime crime , int position) {
+
+
+
+        public void bind(final Crime crime , int position) {
             _crime = crime;
             _position = position;
+
             _titleTextView.setText(_crime.getTitle());
             _dateTextView.setText(_crime.getCrimeDate().toString());
             _solvedCheckBox.setChecked(_crime.isSolved());
+            _solvedCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    _crime.setSolved(isChecked);
+                    CrimeLab.getInstance(getActivity()).updateCrime(_crime);
+                }
+            });
+
         }
 
         @Override
@@ -203,10 +207,12 @@ public class CrimeListFragment extends Fragment {
 
     private class CrimeAdapter extends RecyclerView.Adapter<CrimeHolder>{
         private List<Crime> _crimes;
+        private Fragment _f;
         private int _viewCreatingCount;
 
-        public CrimeAdapter(List<Crime> crimes) {
-            this._crimes = crimes;
+        public CrimeAdapter(Fragment f, List<Crime> crimes){
+            _crimes = crimes;
+            _f = f;
         }
 
         @Override
@@ -231,6 +237,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public int getItemCount() {
             return _crimes.size();
+        }
+
+        public void setCrimes(List<Crime> crimes) {
+            _crimes = crimes;
         }
     }
 }
