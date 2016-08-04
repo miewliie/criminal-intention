@@ -4,11 +4,13 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Environment;
 import android.util.Log;
 
 import com.augmentis.ayp.crimin.model.CrimeCursorWrapper;
 import com.augmentis.ayp.crimin.model.CrimesBaseHelper;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -86,13 +88,13 @@ public class CrimeLab {
         CrimeCursorWrapper cursorWrapper = queryCrimes(null, null);
         try {
             cursorWrapper.moveToFirst();
-            while ( !cursorWrapper.isAfterLast()){
-                crimes.add(cursorWrapper.getCrime());
+            while ( !cursorWrapper.isAfterLast()){ // cursor until after the last row
+                crimes.add(cursorWrapper.getCrime());// add crime to crimelist
 
-                cursorWrapper.moveToNext();
+                cursorWrapper.moveToNext();//move to next crime
             }
         }finally {
-            cursorWrapper.close();
+            cursorWrapper.close(); //move until the last then close cursor
         }
 
         return crimes;
@@ -129,4 +131,15 @@ public class CrimeLab {
                         + " = ?", new String[] { uuidStr}); // uuidStr will manage n put in ? position (sql injection)
 
     }
+
+    public File getPhotoFile(Crime crime){
+
+        File externalFilesDir = context.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+
+        if(externalFilesDir == null){
+            return null;
+        }
+        return new File(externalFilesDir, crime.getPhotoFilename());
+    }
+
 }

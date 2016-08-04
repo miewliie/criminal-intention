@@ -69,6 +69,10 @@ public class Crime {
         this.solved = solved;
     }
 
+    public String getPhotoFilename(){
+
+        return "IMG_" + getId().toString() + ".jpg";
+    }
 
     @Override
     public String toString() {

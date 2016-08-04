@@ -1,3 +1,4 @@
+
 package com.augmentis.ayp.crimin;
 
 import android.app.Activity;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -29,6 +31,7 @@ public class CrimeListFragment extends Fragment {
     private static final int REQUEST_UPDATED_CRIME = 401;
     private static final java.lang.String SUBTITLE_VISIBLE_STATE = "SUBTITLE_VISIBLE";
     private RecyclerView _crimeRecyclerView;
+    private TextView showVisible;
 
     private CrimeAdapter _adapter;
 
@@ -45,6 +48,9 @@ public class CrimeListFragment extends Fragment {
         _crimeRecyclerView = (RecyclerView) v.findViewById(R.id.crime_recycler_view); //put recyclerview into view then view find this id
         _crimeRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity())); // set layoutManager into this no matter what they doing
         //but we know it will draw follow LManager what class like LinearLManager
+
+        showVisible = (TextView) v.findViewById(R.id.crime_visible_text);
+
 
         if(savedInstanceState != null){
             _subtitleVisible = savedInstanceState.getBoolean(SUBTITLE_VISIBLE_STATE);
@@ -86,6 +92,8 @@ public class CrimeListFragment extends Fragment {
             _adapter.notifyDataSetChanged();
 
         }
+
+        updateSubtitle();
     }
 
     @Override
@@ -100,11 +108,12 @@ public class CrimeListFragment extends Fragment {
         switch (item.getItemId()){
             case R.id.menu_item_new_crime:
 
+
                 Crime crime = new Crime();
                 CrimeLab.getInstance(getActivity()).addCrime(crime);//TODO: Add addCrime() to Crime
                 Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
                 startActivity(intent);
-                return true;// return true is nothing to do after this Law Na
+                return true;// return true is nothing to do after this Laew Na
 
             case R.id.menu_item_show_subtitle:
                 _subtitleVisible = !_subtitleVisible;
@@ -122,7 +131,7 @@ public class CrimeListFragment extends Fragment {
 
         CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
         int crimeCount = crimeLab.getCrimes().size();
-        String subtitle = getString(R.string.subtitle_format, crimeCount); //%d is digit
+        String subtitle = getResources().getQuantityString(R.plurals.subtitle_format, crimeCount, crimeCount); //%d is digit
 
         if(!_subtitleVisible){
             subtitle = null;
@@ -130,6 +139,12 @@ public class CrimeListFragment extends Fragment {
 
         AppCompatActivity  appCompatActivity = (AppCompatActivity) getActivity();
         appCompatActivity.getSupportActionBar().setSubtitle(subtitle);
+
+        if (crimeCount != 0) {
+            showVisible.setVisibility(View.INVISIBLE);
+        } else {
+            showVisible.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
