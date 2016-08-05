@@ -139,7 +139,7 @@ public class CrimeLab {
         if(externalFilesDir == null){
             return null;
         }
-        return new File(externalFilesDir, crime.getPhotoFilename());
+        return new File(externalFilesDir, crime.getPhotoFilename()); //return file that already have path bind with crime
     }
 
 }

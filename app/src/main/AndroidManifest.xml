@@ -3,6 +3,7 @@
     package="com.augmentis.ayp.crimin">
 
     <uses-permission android:name="android.permission.CALL_PHONE"/>
+    <uses-feature android:name="android.hardware.camera" android:required="false"/>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"
         android:maxSdkVersion="18"/>
 

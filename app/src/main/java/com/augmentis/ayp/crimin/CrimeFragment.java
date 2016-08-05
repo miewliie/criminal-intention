@@ -9,11 +9,11 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
@@ -58,6 +58,8 @@ public class CrimeFragment extends Fragment {
     private static final int MY_PERMISSION_REQUEST_CALL_PHONE = 324;
     private static final int REQUEST_CAPTURE_PHOTO = 222;
     private static final String TAG = "CrimeFragment";
+    private static final int REQUEST_SHOW_PHOTO_DETAIL = 161;
+    private static final String DIALOG_SHOW_PHOTO_DETAIL = "CrimeFragment.SHOWPHOTO";
 
     private Crime crime;
     private File photoFile;
@@ -69,7 +71,7 @@ public class CrimeFragment extends Fragment {
     private Button crimeReportButton;
     private Button crimeSuspectButton;
     private Button crimeCallButton;
-    private ImageView photoView;
+    public ImageView photoView;
     private ImageButton photoButton;
 
     public CrimeFragment() {
@@ -241,6 +243,18 @@ public class CrimeFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 startActivityForResult(captureImageIntent, REQUEST_CAPTURE_PHOTO);
+            }
+        });
+
+        photoView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                FragmentManager fm = getFragmentManager();
+                PhotoDialog dD = PhotoDialog.newInstance(photoFile);
+                dD.setTargetFragment(CrimeFragment.this, REQUEST_SHOW_PHOTO_DETAIL);
+                dD.show(fm, DIALOG_SHOW_PHOTO_DETAIL);
+
             }
         });
 
@@ -439,4 +453,5 @@ public class CrimeFragment extends Fragment {
 
         }
     }
+
 }

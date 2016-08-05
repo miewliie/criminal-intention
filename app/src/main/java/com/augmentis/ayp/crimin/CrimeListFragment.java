@@ -3,6 +3,7 @@ package com.augmentis.ayp.crimin;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -18,9 +19,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.augmentis.ayp.crimin.model.PictureUtils;
+
+import java.io.File;
 import java.util.List;
 
 /**
@@ -37,6 +42,7 @@ public class CrimeListFragment extends Fragment {
 
     protected static final String TAG = "CRIME_LIST";
     private Integer[] crimePos;
+    private File file;
 
     private boolean _subtitleVisible;
 
@@ -110,7 +116,7 @@ public class CrimeListFragment extends Fragment {
 
 
                 Crime crime = new Crime();
-                CrimeLab.getInstance(getActivity()).addCrime(crime);//TODO: Add addCrime() to Crime
+                CrimeLab.getInstance(getActivity()).addCrime(crime);
                 Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
                 startActivity(intent);
                 return true;// return true is nothing to do after this Laew Na
@@ -178,6 +184,7 @@ public class CrimeListFragment extends Fragment {
         public TextView _titleTextView;
         public TextView _dateTextView;
         public CheckBox _solvedCheckBox;
+        public ImageView _imageView;
 
         Crime _crime;
         int _position;
@@ -188,6 +195,7 @@ public class CrimeListFragment extends Fragment {
             _titleTextView = (TextView) itemView.findViewById(R.id.list_item_crime_title_text_view);
             _solvedCheckBox = (CheckBox) itemView.findViewById(R.id.list_item_crime_solved_check_box);
            _dateTextView = (TextView) itemView.findViewById(R.id.list_item_crime_date_text_view);
+            _imageView = (ImageView) itemView.findViewById(R.id.image_photo_view);
 
             itemView.setOnClickListener(this);
         }
@@ -199,6 +207,10 @@ public class CrimeListFragment extends Fragment {
             _crime = crime;
             _position = position;
 
+            file = CrimeLab.getInstance(getActivity()).getPhotoFile(_crime);
+            Bitmap bitmap = PictureUtils.getScaledBitmap(file.getPath(), getActivity() );
+
+            _imageView.setImageBitmap(bitmap);
             _titleTextView.setText(_crime.getTitle());
             _dateTextView.setText(_crime.getCrimeDate().toString());
             _solvedCheckBox.setChecked(_crime.isSolved());
