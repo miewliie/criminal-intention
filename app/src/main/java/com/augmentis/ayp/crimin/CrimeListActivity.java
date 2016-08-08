@@ -1,9 +1,10 @@
 package com.augmentis.ayp.crimin;
 
 
+import android.content.Intent;
 import android.support.v4.app.Fragment;
 
-public class CrimeListActivity extends SingleFragementActivity {
+public class CrimeListActivity extends SingleFragementActivity implements CrimeListFragment.Callbacks, CrimeFragment.Callbacks{
 
     @Override
     protected Fragment onCreateFragement() {
@@ -11,5 +12,45 @@ public class CrimeListActivity extends SingleFragementActivity {
 
     }
 
+    @Override
+    public void onCrimeSelected(Crime crime) {
+        if(findViewById(R.id.detail_fragment_container) == null){
+            //if it equal null it mean single pane
+            Intent intent = CrimePagerActivity.newIntent(this, crime.getId());
+            startActivity(intent);
+        }else {
 
+            Fragment newDetailFragment = CrimeFragment.newInstance(crime.getId());
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.detail_fragment_container, newDetailFragment)
+                    .commit();
+        }
+
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+        CrimeListFragment listFragment = (CrimeListFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        listFragment.updateUI();
+    }
+
+    @Override
+    public void onCrimeDelete(){
+        CrimeListFragment listFragment = (CrimeListFragment)
+                getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+
+        CrimeFragment detailFragment = (CrimeFragment)
+                getSupportFragmentManager().findFragmentById(R.id.detail_fragment_container);
+
+        listFragment.updateUI();
+
+        //clear
+        getSupportFragmentManager()
+                .beginTransaction()
+                .detach(detailFragment)
+                .commit();
+    }
 }

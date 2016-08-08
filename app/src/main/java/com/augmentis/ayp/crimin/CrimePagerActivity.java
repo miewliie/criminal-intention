@@ -5,7 +5,7 @@ import android.content.Intent;
 import android.support.v4.app.Fragment;
 import java.util.UUID;
 
-public class CrimePagerActivity extends SingleFragementActivity {
+public class CrimePagerActivity extends SingleFragementActivity implements CrimeFragment.Callbacks {
 
     private UUID _crimeId;
 
@@ -14,6 +14,12 @@ public class CrimePagerActivity extends SingleFragementActivity {
 //        super.onCreate(savedInstanceState);
 //
 //    }
+
+
+    @Override
+    protected int getLayoutResId() {
+        return R.layout.activity_single_fragment;
+    }
 
     @Override
     protected Fragment onCreateFragement() {
@@ -28,4 +34,16 @@ public class CrimePagerActivity extends SingleFragementActivity {
         intent.putExtra(CRIME_ID, id);
         return intent;
     }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+
+    }
+
+    @Override
+    public void onCrimeDelete() {
+
+    }
+
+
 }

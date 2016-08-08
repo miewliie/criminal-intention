@@ -2,6 +2,7 @@
 package com.augmentis.ayp.crimin;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -31,7 +32,7 @@ import java.util.List;
 /**
  * Created by Apinya on 7/18/2016.
  */
-public class CrimeListFragment extends Fragment {
+public class CrimeListFragment extends Fragment{
 
     private static final int REQUEST_UPDATED_CRIME = 401;
     private static final java.lang.String SUBTITLE_VISIBLE_STATE = "SUBTITLE_VISIBLE";
@@ -45,6 +46,25 @@ public class CrimeListFragment extends Fragment {
     private File file;
 
     private boolean _subtitleVisible;
+    private Callbacks callbacks;
+
+
+
+    public interface Callbacks{
+        void onCrimeSelected (Crime crime);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        callbacks = (Callbacks) context;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        callbacks = null;
+    }
 
     @Nullable
     @Override
@@ -86,7 +106,7 @@ public class CrimeListFragment extends Fragment {
     /**
      * Update UI
      */
-    private void updateUI() {
+    public void updateUI() {
         CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
         List<Crime> crimes = crimeLab.getCrimes();
 
@@ -105,8 +125,19 @@ public class CrimeListFragment extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setHasOptionsMenu(true);
+
+        setFirstCrimeFragment();
+
+    }
+
+    private void setFirstCrimeFragment() {
+
+        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
+       int crimeCount = crimeLab.getCrimes().size();
+        if(crimeCount != 0){
+            callbacks.onCrimeSelected(crimeLab.getCrimes().get(0));
+    }
     }
 
     @Override
@@ -117,8 +148,13 @@ public class CrimeListFragment extends Fragment {
 
                 Crime crime = new Crime();
                 CrimeLab.getInstance(getActivity()).addCrime(crime);
-                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
-                startActivity(intent);
+
+                //support tablet
+                updateUI();
+                callbacks.onCrimeSelected(crime);
+
+//                Intent intent = CrimePagerActivity.newIntent(getActivity(), crime.getId());
+//                startActivity(intent);
                 return true;// return true is nothing to do after this Laew Na
 
             case R.id.menu_item_show_subtitle:
@@ -164,7 +200,7 @@ public class CrimeListFragment extends Fragment {
     public void onResume() {
         super.onResume();
         Log.d(TAG, "Resume list");
-        updateUI();
+        updateUI();//refresh list
     }
 
     @Override
@@ -219,6 +255,7 @@ public class CrimeListFragment extends Fragment {
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     _crime.setSolved(isChecked);
                     CrimeLab.getInstance(getActivity()).updateCrime(_crime);
+                    callbacks.onCrimeSelected(_crime);
                 }
             });
 
@@ -227,8 +264,10 @@ public class CrimeListFragment extends Fragment {
         @Override
         public void onClick(View v) {
             Log.d(TAG, "send position : " + _position);
-            Intent intent = CrimePagerActivity.newIntent(getActivity(), _crime.getId());
-            startActivityForResult(intent, REQUEST_UPDATED_CRIME);
+            callbacks.onCrimeSelected(_crime);
+
+//            Intent intent = CrimePagerActivity.newIntent(getActivity(), _crime.getId());
+//            startActivityForResult(intent, REQUEST_UPDATED_CRIME);
         }
     }
 
@@ -270,4 +309,6 @@ public class CrimeListFragment extends Fragment {
             _crimes = crimes;
         }
     }
+
+
 }
