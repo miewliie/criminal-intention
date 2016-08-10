@@ -42,7 +42,7 @@ public class CrimePagerActivity extends SingleFragementActivity implements Crime
 
     @Override
     public void onCrimeDelete() {
-
+        finish();
     }
 
 

@@ -52,12 +52,14 @@ public class CrimeListFragment extends Fragment{
 
     public interface Callbacks{
         void onCrimeSelected (Crime crime);
+        void onOpenSelectFirst();
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         callbacks = (Callbacks) context;
+        callbacks.onOpenSelectFirst();
     }
 
     @Override
@@ -127,18 +129,18 @@ public class CrimeListFragment extends Fragment{
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
 
-        setFirstCrimeFragment();
+//        setFirstCrimeFragment();
 
     }
-
-    private void setFirstCrimeFragment() {
-
-        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
-       int crimeCount = crimeLab.getCrimes().size();
-        if(crimeCount != 0){
-            callbacks.onCrimeSelected(crimeLab.getCrimes().get(0));
-    }
-    }
+//
+//    private void setFirstCrimeFragment() {
+//
+//        CrimeLab crimeLab = CrimeLab.getInstance(getActivity());
+//       int crimeCount = crimeLab.getCrimes().size();
+//        if(crimeCount != 0){
+//            callbacks.onCrimeSelected(crimeLab.getCrimes().get(0));
+//         }
+//    }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -286,7 +288,7 @@ public class CrimeListFragment extends Fragment{
             Log.d(TAG, "Create view holder for CrimeList: creating view time = " + _viewCreatingCount);
 
             LayoutInflater layoutInflater = LayoutInflater.from(getActivity());
-            View v = layoutInflater.inflate(R.layout.list_item_crime, parent, false);
+            View v = layoutInflater.inflate(R.layout.view_camera_and_title, parent, false);
 
             return new CrimeHolder(v);
         }

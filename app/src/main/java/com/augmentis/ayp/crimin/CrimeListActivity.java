@@ -4,7 +4,10 @@ package com.augmentis.ayp.crimin;
 import android.content.Intent;
 import android.support.v4.app.Fragment;
 
-public class CrimeListActivity extends SingleFragementActivity implements CrimeListFragment.Callbacks, CrimeFragment.Callbacks{
+import java.util.List;
+
+public class CrimeListActivity extends SingleFragementActivity implements CrimeListFragment.Callbacks,
+        CrimeFragment.Callbacks{
 
     @Override
     protected Fragment onCreateFragement() {
@@ -27,6 +30,23 @@ public class CrimeListActivity extends SingleFragementActivity implements CrimeL
                     .commit();
         }
 
+    }
+
+    @Override
+    public void onOpenSelectFirst() {
+        if(findViewById(R.id.detail_fragment_container) != null){
+            List<Crime> crimeList = CrimeLab.getInstance(this).getCrimes();
+
+            if(crimeList != null && crimeList.size() > 0){
+                Crime crime = crimeList.get(0);
+
+                Fragment newDetailFragment = CrimeFragment.newInstance(crime.getId());
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.detail_fragment_container, newDetailFragment)
+                        .commit();
+            }
+        }
     }
 
     @Override
